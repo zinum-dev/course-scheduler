@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Scheduler</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .periods-container {
+            display: flex;
+            gap: 10px;
+            /* Aumenta o espaçamento entre os períodos */
+            flex-wrap: wrap;
+            /* Permite que os períodos quebrem linha se necessário */
+            max-height: 700px;
+            /* Aumenta a altura máxima do container */
+            overflow-y: auto;
+            /* Adiciona scroll vertical se necessário */
+            padding: 10px;
+            /* Adiciona espaçamento interno */
+            border: 1px solid #ccc;
+            /* Adiciona uma borda para destacar o container */
+            border-radius: 8px;
+            /* Bordas arredondadas */
+            background-color: #f9f9f9;
+            /* Fundo claro */
+        }
+
+        .period {
+            flex: 1;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            overflow-wrap: auto;
+            min-width: 200px;
+            /* Aumenta a altura máxima do container */
+
+            /* Adiciona scroll vertical */
+
+        }
+
+        .period h2 {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 5px 0;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .card p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        /* Cor do card selecionado */
+        .card.selected {
+            background-color: #007bff;
+            /* Azul forte */
+            color: white;
+            border-color: #0056b3;
+        }
+
+        /* Cor dos pré-requisitos */
+        .card.prerequisite {
+            background-color: #ffcccb;
+            /* Vermelho claro */
+            border-color: #ff0000;
+        }
+
+        /* Cor dos dependentes */
+        .card.dependent {
+            background-color: #90ee90;
+            /* Verde claro */
+            border-color: #008000;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Course Scheduler</h1>
+    <div class="periods-container" id="periods"></div>
+
+    <script>
+        const eng = 'http://localhost:3000/api/curriculum?url=https://siga.ufrj.br/sira/temas/zire/frameConsultas.jsp?mainPage=/repositorio-curriculo/61AD45DD-92A4-F79B-3D87-7A444052DF9B.html'
+        const fono = 'http://localhost:3000/api/curriculum?url=https://siga.ufrj.br/sira/temas/zire/frameConsultas.jsp?mainPage=/repositorio-curriculo/D485CA76-0A2A-1B03-4033-D6F1E5748BA9.html'
+        const mock = 'http://localhost:3000/api/curriculum/mock'
+        fetch(fono)
+
+            .then(response => response.json())
+            .then(data => {
+                const periodsContainer = document.getElementById('periods');
+                const subjectsByPeriod = {};
+                const subjectCards = {}; // Para mapear os cards por código
+
+                // Organizar as matérias por período
+                Object.values(data).forEach(subject => {
+                    if (!subjectsByPeriod[subject.period]) {
+                        subjectsByPeriod[subject.period] = [];
+                    }
+                    subjectsByPeriod[subject.period].push(subject);
+                });
+
+                // Criar os elementos HTML para cada período
+                Object.keys(subjectsByPeriod).forEach(period => {
+                    const periodDiv = document.createElement('div');
+                    periodDiv.classList.add('period');
+
+                    const periodTitle = document.createElement('h2');
+                    periodTitle.textContent = period;
+                    periodDiv.appendChild(periodTitle);
+
+                    subjectsByPeriod[period].forEach(subject => {
+                        const card = document.createElement('div');
+                        card.classList.add('card');
+
+                        // Exibir o nome da matéria com tamanho normal e negrito
+                        const subjectTitle = document.createElement('span');
+                        subjectTitle.textContent = subject.name;
+                        subjectTitle.style.fontWeight = 'bold'; // Define o texto como negrito
+                        card.appendChild(subjectTitle);
+
+
+                        // Exibir o código e os créditos da matéria
+                        const subjectDetails = document.createElement('p');
+                        subjectDetails.textContent = `Código: ${subject.code} | Créditos: ${subject.credits}`;
+                        card.appendChild(subjectDetails);
+
+                        // Criar o tooltip com pré-requisitos e dependentes
+                        const prerequisites = subject.prerequisites.length > 0
+                            ? `Pré-requisitos: ${subject.prerequisites.join(', ')}`
+                            : 'Sem pré-requisitos';
+                        const dependents = Object.values(data)
+                            .filter(otherSubject => otherSubject.prerequisites.includes(subject.code))
+                            .map(dependent => dependent.code)
+                            .join(', ');
+                        const dependentsText = dependents ? `Dependentes: ${dependents}` : 'Sem dependentes';
+
+                        // Adicionar o tooltip ao card
+                        card.title = `${prerequisites}\n${dependentsText}`;
+
+                        // Mapear o card pelo código da matéria
+                        subjectCards[subject.code] = card;
+
+                        // Adicionar evento de clique para trocar a cor
+                        card.addEventListener('click', () => {
+                            // Resetar os estilos de todos os cards
+                            document.querySelectorAll('.card').forEach(c => {
+                                c.classList.remove('selected', 'prerequisite', 'dependent');
+                            });
+
+                            // Destacar o card atual
+                            card.classList.add('selected');
+
+                            // Destacar os pré-requisitos
+                            subject.prerequisites.forEach(prerequisiteCode => {
+                                if (subjectCards[prerequisiteCode]) {
+                                    subjectCards[prerequisiteCode].classList.add('prerequisite');
+                                }
+                            });
+
+                            // Destacar os dependentes
+                            Object.values(data).forEach(otherSubject => {
+                                if (otherSubject.prerequisites.includes(subject.code)) {
+                                    if (subjectCards[otherSubject.code]) {
+                                        subjectCards[otherSubject.code].classList.add('dependent');
+                                    }
+                                }
+                            });
+                        });
+
+                        periodDiv.appendChild(card);
+                    });
+
+                    periodsContainer.appendChild(periodDiv);
+                });
+            })
+            .catch(error => console.error('Error fetching subjects:', error));
+    </script>
+</body>
+
+</html>
