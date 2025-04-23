@@ -87,3 +87,31 @@ form {
     /* Verde claro */
     border-color: #008000;
 }
+
+.ad-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 20px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.ad-placeholder {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    border: 2px dashed #ccc;
+    color: #666;
+    font-size: 14px;
+}
+
+.ad-image {
+    width: auto;
+    height: 150px;
+    margin-left: 10px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
