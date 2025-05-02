@@ -22,4 +22,4 @@ class Subject {
     }
 }
 
-module.exports = Subject; // Exportação para CommonJS
+export default Subject; // Exportação para ESM

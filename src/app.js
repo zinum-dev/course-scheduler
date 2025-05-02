@@ -1,13 +1,15 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors'); // Importa o middleware CORS
-const curriculumRoutes = require('./routes/curriculumRoutes'); // Importa as rotas de subjects
+import express from 'express';
+import cors from 'cors'; // Importa o middleware CORS
+import curriculumRoutes from './routes/curriculumRoutes.js'; // Importa as rotas de subjects
+import pkg from 'body-parser';
+
+const { json } = pkg;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middlewares
-app.use(bodyParser.json());
+app.use(json());
 app.use(cors()); // Habilita CORS para todas as rotas
 
 // Rotas

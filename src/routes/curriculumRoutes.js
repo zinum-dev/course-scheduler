@@ -1,7 +1,7 @@
-const express = require('express');
-const { getSubjects,scrapeCurriculum } = require('../controllers/curriculumController');
+import { Router } from 'express';
+import { getSubjects, scrapeCurriculum } from '../controllers/curriculumController.js';
 
-const router = express.Router();
+const router = Router();
 
 // Rota para retornar os dados mockados
 router.get('/mock', getSubjects);
@@ -10,19 +10,5 @@ router.get('/mock', getSubjects);
 router.get('/', scrapeCurriculum);
 
 
-/*    {
-        code: "ICP123",
-        name: "Linguagens Formais",
-        credits: 4.0,
-        theoreticalHours: 60,
-        practicalHours: 0,
-        extensionHours: 0,
-        period: 5,
-        prerequisites: ["ICP141", "ICP144"]
-    },*/
-// Rota para gerar o currículo a partir de array de matérias
-//router.post('/array', generateCurriculum);
-
-
-module.exports = router;
+export default router;
 

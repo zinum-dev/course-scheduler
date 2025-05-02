@@ -1,4 +1,4 @@
-const Subject = require('../models/subject'); // Importando a classe Subject
+import Subject from '../models/subject.js'; // Importando a classe Subject
 
 const mockSubjectsArray = [
     // Primeiro período
@@ -737,5 +737,5 @@ const mockSubjectsArrayInstances = mockSubjectsArray.map(subjectData => {
     );
 });
 
-module.exports = mockSubjectsArrayInstances;
+export default mockSubjectsArrayInstances;
 

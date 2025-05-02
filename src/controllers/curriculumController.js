@@ -1,9 +1,9 @@
-const mockSubjectsArrayInstances = require('../mock/mockData');
-const { populateDependentsFromPrerequisites, convertToMap } = require('../services/dependencyService');
-const scrapeUfrjCurriculum = require('../services/curriculumService').default; // Importa a função fictícia de scraping
+import mockSubjectsArrayInstances from '../mock/mockData.js';
+import { populateDependentsFromPrerequisites, convertToMap } from '../services/dependencyService.js';
+import scrapeUfrjCurriculum from '../services/curriculumService.js'; // Importa a função fictícia de scraping
 
 // Controller para retornar os dados mockados
-exports.getSubjects = (_, res) => {
+export function getSubjects(_, res) {
     try {
         /**
          * A map containing subjects with their respective dependents populated based on prerequisites.
@@ -19,10 +19,10 @@ exports.getSubjects = (_, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-};
+}
 
 // Controller para retornar os dados a partir de URL
-exports.scrapeCurriculum = async (req, res) => {
+export async function scrapeCurriculum(req, res) {
     try {
         const { url } = req.query; // Obtém a URL dos parâmetros da query string
         if (!url) {
